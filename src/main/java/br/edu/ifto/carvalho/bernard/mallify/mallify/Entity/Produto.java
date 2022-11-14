@@ -11,6 +11,7 @@ import java.util.Map;
 
 import javax.validation.Validation;
 import javax.validation.constraints.Min;
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
@@ -28,7 +29,8 @@ public class Produto implements Serializable {
     @Min(0)
     private Double preco;
 
-    @NotEmpty
+    @NotBlank
+    @NotNull
     private String nome;    
 
     @Transient
@@ -44,7 +46,7 @@ public class Produto implements Serializable {
         
         constraintViolations
         .parallelStream()
-        .forEach(constraint->{
+        .forEach( constraint -> {
             String nomeAtributo = constraint.getPropertyPath().toString();                        
             erros.putIfAbsent(nomeAtributo, new ArrayList<String>());
             
