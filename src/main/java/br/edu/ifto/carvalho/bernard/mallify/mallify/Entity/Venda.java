@@ -1,5 +1,6 @@
 package br.edu.ifto.carvalho.bernard.mallify.mallify.Entity;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -34,7 +35,7 @@ import lombok.Data;
 @Scope(value=WebApplicationContext.SCOPE_SESSION)
 @Component
 @Entity
-public class Venda {
+public class Venda implements Serializable{
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -76,6 +77,15 @@ public class Venda {
             return true;
 
         return false;
+    }
+
+    public Double getValorTotal(){
+        return 
+        itensVenda
+            .stream()
+            .mapToDouble(item->
+                item.getPreço())
+            .sum();
     }
     
 }
