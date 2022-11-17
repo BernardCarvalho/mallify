@@ -21,6 +21,9 @@ public class ItemVenda implements Serializable , Validable{
     @Column(name = "id", nullable = false)
     private Integer id;
 
+    @ManyToOne
+    Produto produto;
+
     @NotNull
     @Min(1)
     private Double preco;

@@ -2,11 +2,19 @@ package br.edu.ifto.carvalho.bernard.mallify.mallify.Controller;
 
 import lombok.RequiredArgsConstructor;
 
+import java.util.List;
+
+import javax.transaction.Transactional;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.config.web.server.ServerHttpSecurity.HttpsRedirectSpec;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.context.WebApplicationContext;
 
+import br.edu.ifto.carvalho.bernard.mallify.mallify.Entity.ItemVenda;
 import br.edu.ifto.carvalho.bernard.mallify.mallify.Entity.Venda;
 import br.edu.ifto.carvalho.bernard.mallify.mallify.Repository.VendaRepository;
 
@@ -15,10 +23,89 @@ import br.edu.ifto.carvalho.bernard.mallify.mallify.Repository.VendaRepository;
 @RequiredArgsConstructor
 @CrossOrigin
 @RequestMapping("/vendas")
+@Scope(value=WebApplicationContext.SCOPE_REQUEST)
+@Transactional
 public class VendaController {
 
     @Autowired
     VendaRepository repository;
+
+    @Autowired
+    Venda carrinho;
+
+    //
+    // <CARRINHO>
+    //
+    @GetMapping("carrinho")
+    public ResponseEntity<?> get(){
+        return new ResponseEntity<>(carrinho, HttpStatus.OK);
+    }
+
+    @PutMapping("carrinho")
+    public ResponseEntity<?> put(@RequestBody Venda venda){
+        try{
+        carrinho.setId(venda.getId());
+        carrinho.setData(venda.getData());
+        carrinho.setCliente(venda.getCliente());
+        carrinho.setItensVenda(venda.getItensVenda());
+        
+        if(!carrinho.isValid())
+            return new ResponseEntity<>(carrinho, HttpStatus.NOT_ACCEPTABLE);
+        return new ResponseEntity<>(carrinho, HttpStatus.NO_CONTENT);
+        }catch(Exception e){ return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);}
+    }
+
+    @DeleteMapping("carrinho")
+    public ResponseEntity<?> delete(){
+        carrinho = new Venda();
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+        ///
+        /// <itens>
+        ///
+
+        @GetMapping("carrinho/itens") 
+        public ResponseEntity<?> findAllItens(){
+            if(carrinho==null)
+                return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(carrinho.getItensVenda(),HttpStatus.OK);
+        }
+
+        @GetMapping("carrinho/itens/{id}") 
+        public ResponseEntity<?> findItemById(@PathVariable Integer id){
+            if(carrinho==null)
+                return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+            ItemVenda itemVenda = carrinho.getItensVenda().get(id);
+            if(itemVenda==null)
+                return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(itemVenda,HttpStatus.OK);
+        }
+
+        @PutMapping("carrinho/itens")
+        public ResponseEntity<?> updateItemVendaList(@RequestBody List<ItemVenda> itensList){
+            
+            for (ItemVenda itemVenda : itensList) {
+                if(!itemVenda.isValid())
+                    return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+                if(!itemVenda.getProduto().isValid())
+                    return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+            }
+            
+            carrinho.setItensVenda(itensList);
+
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
+
+
+
+        ///
+        /// </itens>
+        ///
+
+    //
+    // </CARRINHO>
+    //
 
     @GetMapping()
     public ResponseEntity<?> findAll() {
