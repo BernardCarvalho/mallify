@@ -10,7 +10,7 @@ import java.io.Serializable;
 
 @Entity
 @Data
-@Table(name = "tb_cliente_pf")
+@Table(name = "tbL_cliente_pf")
 public class ClientePessoaFisica extends Cliente implements Serializable {
     
     @NotNull

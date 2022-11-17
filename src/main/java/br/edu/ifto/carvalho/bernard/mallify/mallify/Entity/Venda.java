@@ -77,7 +77,7 @@ public class Venda implements Serializable{
         {
             erros.putIfAbsent("itensVenda",new ArrayList<>());
             List<String> errosItensVenda = erros.get("itensVenda");
-            errosItensVenda.add("NÃO PODE CONTER 0 ITENS");
+            errosItensVenda.add("tem que possuir ao menos um item");
         }
 
         if(erros.isEmpty())
@@ -91,7 +91,7 @@ public class Venda implements Serializable{
         itensVenda
             .stream()
             .mapToDouble(item->
-                item.getPreço())
+                item.getPreco())
             .sum();
     }
     

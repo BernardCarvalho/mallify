@@ -19,7 +19,7 @@ public class ItemVenda implements Serializable {
 
     @NotNull
     @Min(1)
-    private Double preço;
+    private Double preco;
 
     @NotNull
     @Min(1)

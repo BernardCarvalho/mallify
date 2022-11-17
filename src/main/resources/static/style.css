@@ -1,0 +1,16 @@
+*{
+    margin: 0px;
+    padding: 0px;
+}
+.produto{
+    padding:10px;
+    margin: 10px;
+}
+.produto p{
+    text-align: center;
+    font-weight: bold;
+}
+.produto button{
+    width:100%;
+    padding:10px;
+}
