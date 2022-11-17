@@ -11,6 +11,7 @@ public class MallifyApplication {
 
 	public static void main(String[] args) {
 		SpringApplication.run(MallifyApplication.class, args);
+		
 		Produto produto = new Produto();
 		
 		produto.isValid();
