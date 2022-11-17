@@ -4,7 +4,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
+import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
 
 import br.edu.ifto.carvalho.bernard.mallify.mallify.Interfaces.Validable;
@@ -19,7 +21,8 @@ public class EntityValidatorHelper<EntityType> implements Validable{
 
     @Override
     public Boolean isValid() {
-        var constraintViolations = Validation.buildDefaultValidatorFactory().getValidator().validate(this.entityObj);
+        
+        Set<ConstraintViolation<Object>> constraintViolations = Validation.buildDefaultValidatorFactory().getValidator().validate(this.entityObj);
         if(constraintViolations.isEmpty())
             return true;
         return false;
@@ -27,8 +30,8 @@ public class EntityValidatorHelper<EntityType> implements Validable{
 
     @Override
     public Map<String, List<String>> getErros() {
-        var constraintViolations = Validation.buildDefaultValidatorFactory().getValidator().validate(this.entityObj);
-        var erros = new HashMap<String, List<String>>();
+        Set<ConstraintViolation<Object>> constraintViolations = Validation.buildDefaultValidatorFactory().getValidator().validate(this.entityObj);
+        Map<String, List<String>> erros = new HashMap<String, List<String>>();
         constraintViolations
         .parallelStream()
         .forEach( constraint -> {
