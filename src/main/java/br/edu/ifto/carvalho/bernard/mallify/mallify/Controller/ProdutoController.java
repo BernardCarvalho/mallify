@@ -35,7 +35,10 @@ public class ProdutoController {
     public ResponseEntity<?> find(@PathVariable Integer id) {
         try {
             //TODO Implement Your Logic To Get Data From Service Layer Or Directly From Repository Layer
-            return new ResponseEntity<>(produtoRepository.findById(id), HttpStatus.OK);
+            Produto produto = produtoRepository.findById(id).get();
+            if(produto==null)
+                return new ResponseEntity<>(HttpStatus.GONE);
+            return new ResponseEntity<>(produto, HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -45,11 +48,11 @@ public class ProdutoController {
     public ResponseEntity<?> create(@RequestBody Produto produto) {
         try {
             if(!produto.isValid())
-                throw new Exception();
+            return new ResponseEntity<>(produto,HttpStatus.NOT_ACCEPTABLE);
             produtoRepository.save(produto);
             return new ResponseEntity<>(produto, HttpStatus.CREATED);
         } catch (Exception e) {
-            return new ResponseEntity<>(produto,HttpStatus.NOT_ACCEPTABLE);
+            return new ResponseEntity<>(produto,HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -57,11 +60,11 @@ public class ProdutoController {
     public ResponseEntity<?> update(@RequestBody Produto produto) {
         try {
             if(!produto.isValid())
-                throw new Exception();
+            return new ResponseEntity<>(produto,HttpStatus.NOT_ACCEPTABLE);
             produtoRepository.save(produto);
             return new ResponseEntity<>(produto, HttpStatus.NO_CONTENT);
         } catch (Exception e) {
-            return new ResponseEntity<>(produto,HttpStatus.NOT_ACCEPTABLE);
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
