@@ -3,13 +3,9 @@ package br.edu.ifto.carvalho.bernard.mallify.mallify.Entity;
 import javax.persistence.*;
 import lombok.Data;
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-
-import javax.validation.Validation;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;

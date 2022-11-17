@@ -7,24 +7,24 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import br.edu.ifto.carvalho.bernard.mallify.mallify.Entity.Produto;
-import br.edu.ifto.carvalho.bernard.mallify.mallify.Repository.ProdutoRepository;
+import br.edu.ifto.carvalho.bernard.mallify.mallify.Entity.Venda;
+import br.edu.ifto.carvalho.bernard.mallify.mallify.Repository.VendaRepository;
 
 
 @RestController
 @RequiredArgsConstructor
 @CrossOrigin
-@RequestMapping("/produtos")
-public class ProdutoController {
+@RequestMapping("/vendas")
+public class VendaController {
 
     @Autowired
-    ProdutoRepository produtoRepository;
+    VendaRepository repository;
 
     @GetMapping()
     public ResponseEntity<?> findAll() {
         try {
             //TODO Implement Your Logic To Get Data From Service Layer Or Directly From Repository Layer
-            return new ResponseEntity<>(produtoRepository.findAll(), HttpStatus.OK);
+            return new ResponseEntity<>(repository.findAll(), HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -34,34 +34,34 @@ public class ProdutoController {
     public ResponseEntity<?> find(@PathVariable Integer id) {
         try {
             //TODO Implement Your Logic To Get Data From Service Layer Or Directly From Repository Layer
-            Produto produto = produtoRepository.findById(id).get();
-            if(produto==null)
+            Venda venda = repository.findById(id).get();
+            if(venda==null)
                 return new ResponseEntity<>(HttpStatus.GONE);
-            return new ResponseEntity<>(produto, HttpStatus.OK);
+            return new ResponseEntity<>(venda, HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
     @PostMapping()
-    public ResponseEntity<?> create(@RequestBody Produto produto) {
+    public ResponseEntity<?> create(@RequestBody Venda venda) {
         try {
-            if(!produto.isValid())
-            return new ResponseEntity<>(produto,HttpStatus.NOT_ACCEPTABLE);
-            produtoRepository.save(produto);
-            return new ResponseEntity<>(produto, HttpStatus.CREATED);
+            if(!venda.isValid())
+                return new ResponseEntity<>(venda,HttpStatus.NOT_ACCEPTABLE);
+            repository.save(venda);
+            return new ResponseEntity<>(venda, HttpStatus.CREATED);
         } catch (Exception e) {
-            return new ResponseEntity<>(produto,HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(venda,HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
     @PutMapping()
-    public ResponseEntity<?> update(@RequestBody Produto produto) {
+    public ResponseEntity<?> update(@RequestBody Venda venda) {
         try {
-            if(!produto.isValid())
-            return new ResponseEntity<>(produto,HttpStatus.NOT_ACCEPTABLE);
-            produtoRepository.save(produto);
-            return new ResponseEntity<>(produto, HttpStatus.NO_CONTENT);
+            if(!venda.isValid())
+                return new ResponseEntity<>(venda,HttpStatus.NOT_ACCEPTABLE);
+            repository.save(venda);
+            return new ResponseEntity<>(venda, HttpStatus.NO_CONTENT);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -70,7 +70,7 @@ public class ProdutoController {
     @DeleteMapping("/{id}")
     public ResponseEntity<?> destroy(@PathVariable Integer id) {
         try {
-            produtoRepository.deleteById(id);
+            repository.deleteById(id);
             return new ResponseEntity<>(HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.OK);

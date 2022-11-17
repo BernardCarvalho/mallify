@@ -1,6 +1,7 @@
 package br.edu.ifto.carvalho.bernard.mallify.mallify.Entity;
 
 import javax.persistence.*;
+import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 
 import org.hibernate.annotations.GenericGenerator;
@@ -25,6 +26,7 @@ public class Cliente implements Serializable , Validable{
     private Integer id;
 
     @NotBlank
+    @Email
     private String email;
 
     @OneToMany(mappedBy = "cliente")
