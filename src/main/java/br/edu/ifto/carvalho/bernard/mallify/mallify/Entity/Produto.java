@@ -17,7 +17,7 @@ import javax.validation.constraints.NotNull;
 @Entity
 @Data
 
-@Table(name = "produto")
+@Table(name = "tbl_produto")
 public class Produto implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)

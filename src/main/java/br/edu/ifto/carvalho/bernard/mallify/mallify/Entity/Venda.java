@@ -31,7 +31,7 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.Data;
 
 @Data// notação do lombok.Data que permite que não precisemos informar getters e setters
-@Table(name = "tb_venda")
+@Table(name = "tbl_venda")
 @Scope(value=WebApplicationContext.SCOPE_SESSION)
 @Component
 @Entity
@@ -72,6 +72,13 @@ public class Venda implements Serializable{
             String mensagem = constraint.getMessage().toString();
             erros.get(nomeAtributo).add(mensagem);
         });
+
+        if(itensVenda.isEmpty())
+        {
+            erros.putIfAbsent("itensVenda",new ArrayList<>());
+            List<String> errosItensVenda = erros.get("itensVenda");
+            errosItensVenda.add("NÃO PODE CONTER 0 ITENS");
+        }
 
         if(erros.isEmpty())
             return true;
