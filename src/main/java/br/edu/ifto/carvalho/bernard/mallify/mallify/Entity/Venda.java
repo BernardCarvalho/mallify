@@ -1,8 +1,10 @@
 package br.edu.ifto.carvalho.bernard.mallify.mallify.Entity;
 
 import java.io.Serializable;
+import java.lang.reflect.Array;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -28,6 +30,8 @@ import org.springframework.web.context.WebApplicationContext;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 
+import br.edu.ifto.carvalho.bernard.mallify.mallify.Classes.EntityValidatorHelper;
+import br.edu.ifto.carvalho.bernard.mallify.mallify.Interfaces.Validable;
 import lombok.Data;
 
 @Data// notação do lombok.Data que permite que não precisemos informar getters e setters
@@ -35,7 +39,7 @@ import lombok.Data;
 @Scope(value=WebApplicationContext.SCOPE_SESSION)
 @Component
 @Entity
-public class Venda implements Serializable{
+public class Venda implements Serializable, Validable{
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -54,38 +58,6 @@ public class Venda implements Serializable{
     @JoinColumn(name="cod_cliente")
     private Cliente cliente;
 
-    @Transient
-    private Map<String, List<String>> erros;
-    
-    public boolean isValid(){
-
-        var constraintViolations = Validation.buildDefaultValidatorFactory().getValidator().validate(this);
-        
-        erros = new HashMap<String, List<String>>();
-        
-        constraintViolations
-        .parallelStream()
-        .forEach( constraint -> {
-            String nomeAtributo = constraint.getPropertyPath().toString();                        
-            erros.putIfAbsent(nomeAtributo, new ArrayList<String>());
-            
-            String mensagem = constraint.getMessage().toString();
-            erros.get(nomeAtributo).add(mensagem);
-        });
-
-        if(itensVenda.isEmpty())
-        {
-            erros.putIfAbsent("itensVenda",new ArrayList<>());
-            List<String> errosItensVenda = erros.get("itensVenda");
-            errosItensVenda.add("tem que possuir ao menos um item");
-        }
-
-        if(erros.isEmpty())
-            return true;
-
-        return false;
-    }
-
     public Double getValorTotal(){
         return 
         itensVenda
@@ -94,5 +66,32 @@ public class Venda implements Serializable{
                 item.getPreco())
             .sum();
     }
+
+    @Override
+    public Boolean isValid() {
+        EntityValidatorHelper<Venda> entityValidatorHelper = new EntityValidatorHelper<>(this);
+        Boolean valid = entityValidatorHelper.isValid();
+        if(!valid)
+            return Boolean.FALSE;
+        
+        if(itensVenda.size()<1)
+            return Boolean.FALSE;
+
+        return Boolean.TRUE;
+    }
+
+    @Override
+    public Map<String, List<String>> getErros() {
+        EntityValidatorHelper<Venda> entityValidatorHelper = new EntityValidatorHelper<>(this);
+        Map<String, List<String>> erros = entityValidatorHelper.getErros();
+
+        if(itensVenda.size()<1)
+            erros.putIfAbsent("itensVenda", Arrays.asList("e necessario possuir ter ao menos um item") );
+        
+        return erros;
+    }
+
+   
+
     
 }

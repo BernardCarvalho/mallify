@@ -14,11 +14,14 @@ import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
+import br.edu.ifto.carvalho.bernard.mallify.mallify.Classes.EntityValidatorHelper;
+import br.edu.ifto.carvalho.bernard.mallify.mallify.Interfaces.Validable;
+
 @Entity
 @Data
 
 @Table(name = "tbl_produto")
-public class Produto implements Serializable {
+public class Produto implements Serializable, Validable {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id", nullable = false)
@@ -31,32 +34,22 @@ public class Produto implements Serializable {
     @NotBlank
     @NotNull
     private String nome;    
-
-    @Transient
-    private Map<String, List<String>> erros;
-
     
 
-    public boolean isValid(){
-
-        var constraintViolations = Validation.buildDefaultValidatorFactory().getValidator().validate(this);
-        
-        erros = new HashMap<String, List<String>>();
-        
-        constraintViolations
-        .parallelStream()
-        .forEach( constraint -> {
-            String nomeAtributo = constraint.getPropertyPath().toString();                        
-            erros.putIfAbsent(nomeAtributo, new ArrayList<String>());
-            
-            String mensagem = constraint.getMessage().toString();
-            erros.get(nomeAtributo).add(mensagem);
-        });
-
-        if(erros.isEmpty())
-            return true;
-
-        return false;
+    @Override
+    public Boolean isValid() {
+        EntityValidatorHelper<Produto> entityValidatorHelper = new EntityValidatorHelper<>(this);
+        return entityValidatorHelper.isValid();
     }
+
+
+    @Override
+    public Map<String, List<String>> getErros() {
+        EntityValidatorHelper<Produto> entityValidatorHelper = new EntityValidatorHelper<>(this);
+        return entityValidatorHelper.getErros();        
+    }
+
     
+
+       
 }
