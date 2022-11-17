@@ -19,7 +19,7 @@ public class EntityValidatorHelper<EntityType> implements Validable{
 
     @Override
     public Boolean isValid() {
-        var constraintViolations = Validation.buildDefaultValidatorFactory().getValidator().validate(entityObj);
+        var constraintViolations = Validation.buildDefaultValidatorFactory().getValidator().validate(this.entityObj);
         if(constraintViolations.isEmpty())
             return true;
         return false;
@@ -27,7 +27,7 @@ public class EntityValidatorHelper<EntityType> implements Validable{
 
     @Override
     public Map<String, List<String>> getErros() {
-        var constraintViolations = Validation.buildDefaultValidatorFactory().getValidator().validate(entityObj);
+        var constraintViolations = Validation.buildDefaultValidatorFactory().getValidator().validate(this.entityObj);
         var erros = new HashMap<String, List<String>>();
         constraintViolations
         .parallelStream()
