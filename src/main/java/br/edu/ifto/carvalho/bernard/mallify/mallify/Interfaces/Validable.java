@@ -6,4 +6,5 @@ import java.util.Map;
 public interface Validable {
     Boolean isValid();
     Map<String, List<String>> getErros();
+    
 }

@@ -1,7 +1,9 @@
-POST http://localhost:8080/produtos HTTP/1.1
+PUT http://localhost:8080/produtos HTTP/1.1
 content-type: application/json
 
 {
+    "id":1,
     "nome":"arroz",
-    "preco":"0"
+    "preco":5
+    
 }

@@ -55,16 +55,15 @@ public class VendaController {
 
     @PutMapping("carrinho")
     public ResponseEntity<?> put(@RequestBody Venda venda){
-        try{
-        carrinho.setId(venda.getId());
-        carrinho.setData(venda.getData());
-        carrinho.setCliente(venda.getCliente());
-        carrinho.setItensVenda(venda.getItensVenda());
         
-        if(!carrinho.isValid())
-            return new ResponseEntity<>(carrinho, HttpStatus.NOT_ACCEPTABLE);
-        return new ResponseEntity<>(carrinho, HttpStatus.NO_CONTENT);
-        }catch(Exception e){ return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);}
+        if(venda==null || !venda.isValid())
+            return new ResponseEntity<>(venda,HttpStatus.NOT_ACCEPTABLE);
+        
+        this.carrinho.setCliente(venda.getCliente());
+        this.carrinho.setData(venda.getData());
+        this.carrinho.setItensVenda(venda.getItensVenda());
+        
+        return new ResponseEntity<>(carrinho,HttpStatus.NO_CONTENT);
     }
 
     @DeleteMapping("carrinho")
@@ -91,6 +90,7 @@ public class VendaController {
             ItemVenda itemVenda = carrinho.getItensVenda().get(id);
             if(itemVenda==null)
                 return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+            
             return new ResponseEntity<>(itemVenda,HttpStatus.OK);
         }
 
@@ -100,25 +100,33 @@ public class VendaController {
             
             for (ItemVenda itemVenda : itensList) {
                 if(!itemVenda.isValid())
-                return new ResponseEntity<>(itemVenda,HttpStatus.NOT_ACCEPTABLE);
-                if(!itemVenda.getProduto().isValid())
-                return new ResponseEntity<>(itensList,HttpStatus.NOT_ACCEPTABLE);
+                    return new ResponseEntity<>(itemVenda,HttpStatus.NOT_ACCEPTABLE);
+                itemVenda.getProduto().setProdutoRepository(produtoRepository);
+                if(!itemVenda.getProduto().existsInRepository())
+                    return new ResponseEntity<>("{\"mensagem\":\"produto "+itemVenda.getProduto()+" sem id\"}",HttpStatus.NOT_ACCEPTABLE);
             }
-            
-            carrinho.setItensVenda(itensList);
-
-            //////////////////////////////////////////////////////////////////////////////////
-
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+            this.carrinho.setItensVenda(itensList);
+            for (ItemVenda itemVenda : carrinho.getItensVenda()) {
+                itemVenda.setPreco(produtoRepository.findById(itemVenda.getProduto().getId()).get().getPreco());
+            }
+            return new ResponseEntity<>(carrinho.getItensVenda(),HttpStatus.NO_CONTENT);
         }
         
         @PutMapping("carrinho/itens/{index}")
         public ResponseEntity<?> putItemVenda(@PathVariable Integer index,@RequestBody ItemVenda itemVenda){
             if(!itemVenda.isValid())
                 return new ResponseEntity<>(itemVenda,HttpStatus.NOT_ACCEPTABLE);
-            if(!itemVenda.getProduto().isValid())
-                return new ResponseEntity<>(itemVenda,HttpStatus.NOT_ACCEPTABLE);
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+            itemVenda.getProduto().setProdutoRepository(produtoRepository);
+            if(!itemVenda.getProduto().existsInRepository())
+            return new ResponseEntity<>(itemVenda,HttpStatus.NOT_ACCEPTABLE);
+        
+            
+            itemVenda.setPreco(produtoRepository.findById(itemVenda.getProduto().getId()).get().getPreco());
+            itemVenda.getProduto().setNome(produtoRepository.findById(itemVenda.getProduto().getId()).get().getNome());
+            itemVenda.getProduto().setId(produtoRepository.findById(itemVenda.getProduto().getId()).get().getId());
+            itemVenda.getProduto().setPreco(produtoRepository.findById(itemVenda.getProduto().getId()).get().getPreco());
+            
+            return new ResponseEntity<>(itemVenda,HttpStatus.NO_CONTENT);
         }
 
 
@@ -159,12 +167,22 @@ public class VendaController {
         try {
             if(!venda.isValid())
                 return new ResponseEntity<>(venda,HttpStatus.NOT_ACCEPTABLE);           
+            for (ItemVenda item : venda.getItensVenda()) {
+                item.getProduto().setProdutoRepository(produtoRepository);
+                if(item.getProduto().getId()==null || !item.getProduto().existsInRepository() )
+                    return new ResponseEntity<>("{\"mensagem\":\"produto foi enviado sem identificador ou o mesmo não existe no repositorio\"}",HttpStatus.NOT_ACCEPTABLE);              
+            }
             
-            //TODO CREATE PRODUTOS
+            carrinho.setItensVenda(venda.getItensVenda());
+            for (ItemVenda item : carrinho.getItensVenda()) {
+                double preco = item.getProduto().getPreco();
+                item.setPreco(preco);
+                item.getProduto().setPreco(preco);
+                item.getProduto().setNome(item.getProduto().getNome());
+            }
             
-            //TODO CREATE ITEMVENDAS
             
-            //repository.save(venda);
+            repository.save(venda);
             return new ResponseEntity<>(venda, HttpStatus.CREATED);
         } catch (Exception e) {
             return new ResponseEntity<>(venda,HttpStatus.INTERNAL_SERVER_ERROR);

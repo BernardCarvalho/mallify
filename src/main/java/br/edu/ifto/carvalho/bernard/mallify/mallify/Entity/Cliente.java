@@ -7,7 +7,7 @@ import javax.validation.constraints.NotBlank;
 import org.hibernate.annotations.GenericGenerator;
 
 import br.edu.ifto.carvalho.bernard.mallify.mallify.Classes.EntityValidatorHelper;
-import br.edu.ifto.carvalho.bernard.mallify.mallify.Interfaces.ExistencyCheckable;
+import br.edu.ifto.carvalho.bernard.mallify.mallify.Interfaces.ExistenceInSelfRepository;
 import br.edu.ifto.carvalho.bernard.mallify.mallify.Interfaces.Validable;
 import br.edu.ifto.carvalho.bernard.mallify.mallify.Repository.ClienteRepository;
 import lombok.Data;
@@ -20,7 +20,7 @@ import java.util.Map;
 @Table(name = "tbl_cliente")
 @Data
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
-public class Cliente implements Serializable , Validable, ExistencyCheckable<ClienteRepository>{
+public class Cliente implements Serializable , Validable, ExistenceInSelfRepository{
 
     @Id
     @GeneratedValue(generator = "inc")
@@ -48,10 +48,14 @@ public class Cliente implements Serializable , Validable, ExistencyCheckable<Cli
 
 
     @Override
-    public Boolean existsIn(ClienteRepository repository) {
-        if(this.getId()==null)
-            return false;
-        return !repository.findById(this.getId()).isEmpty();
+    public Boolean existsInRepository() {
+        if(this instanceof ClientePessoaFisica){
+
+        }
+        return false;
     }
+
+
+  
     
 }

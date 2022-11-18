@@ -19,6 +19,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
 
 import org.springframework.context.annotation.Scope;
@@ -27,9 +28,10 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import br.edu.ifto.carvalho.bernard.mallify.mallify.Classes.EntityValidatorHelper;
-import br.edu.ifto.carvalho.bernard.mallify.mallify.Interfaces.ExistencyCheckable;
+import br.edu.ifto.carvalho.bernard.mallify.mallify.Interfaces.ExistenceInSelfRepository;
 import br.edu.ifto.carvalho.bernard.mallify.mallify.Interfaces.Validable;
 import br.edu.ifto.carvalho.bernard.mallify.mallify.Repository.VendaRepository;
 import lombok.Data;
@@ -39,12 +41,16 @@ import lombok.Data;
 @Scope(value=WebApplicationContext.SCOPE_SESSION)
 @Component
 @Entity
-public class Venda implements Serializable, Validable, ExistencyCheckable<VendaRepository>{
+public class Venda implements Serializable, Validable, ExistenceInSelfRepository{
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id", nullable = false)
     private Integer id;
+
+    @Transient
+    @JsonIgnore
+    private VendaRepository repository;
 
     @DateTimeFormat(iso=DateTimeFormat.ISO.DATE_TIME)
     private LocalDate data = LocalDate.now();
@@ -117,12 +123,12 @@ public class Venda implements Serializable, Validable, ExistencyCheckable<VendaR
     }
 
     @Override
-    public Boolean existsIn(VendaRepository repository) {
-        if(this.id==null)
-            return false;
-        return !repository.findById(id).isEmpty();
+    public Boolean existsInRepository() {
+        // TODO Auto-generated method stub
+        return null;
     }
 
+   
     
 
    

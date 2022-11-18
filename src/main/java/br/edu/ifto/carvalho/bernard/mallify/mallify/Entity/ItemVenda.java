@@ -5,7 +5,7 @@ import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 
 import br.edu.ifto.carvalho.bernard.mallify.mallify.Classes.EntityValidatorHelper;
-import br.edu.ifto.carvalho.bernard.mallify.mallify.Interfaces.ExistencyCheckable;
+import br.edu.ifto.carvalho.bernard.mallify.mallify.Interfaces.ExistenceInSelfRepository;
 import br.edu.ifto.carvalho.bernard.mallify.mallify.Interfaces.Validable;
 import br.edu.ifto.carvalho.bernard.mallify.mallify.Repository.ItemVendaRepository;
 import br.edu.ifto.carvalho.bernard.mallify.mallify.Repository.ProdutoRepository;
@@ -19,7 +19,7 @@ import java.util.List;
 @Entity
 @Data
 @Table(name = "tbl_itemvenda")
-public class ItemVenda implements Serializable , Validable, ExistencyCheckable<ItemVendaRepository>{
+public class ItemVenda implements Serializable , Validable, ExistenceInSelfRepository{
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id", nullable = false)
@@ -65,10 +65,11 @@ public class ItemVenda implements Serializable , Validable, ExistencyCheckable<I
     }
 
     @Override
-    public Boolean existsIn(ItemVendaRepository repository) {
-        if(this.id==null)
-            return false;
-        return !repository.findById(id).isEmpty();
+    public Boolean existsInRepository() {
+        // TODO Auto-generated method stub
+        return null;
     }
+
+   
 
 }

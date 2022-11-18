@@ -11,8 +11,10 @@ import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import br.edu.ifto.carvalho.bernard.mallify.mallify.Classes.EntityValidatorHelper;
-import br.edu.ifto.carvalho.bernard.mallify.mallify.Interfaces.ExistencyCheckable;
+import br.edu.ifto.carvalho.bernard.mallify.mallify.Interfaces.ExistenceInSelfRepository;
 import br.edu.ifto.carvalho.bernard.mallify.mallify.Interfaces.Validable;
 import br.edu.ifto.carvalho.bernard.mallify.mallify.Repository.ProdutoRepository;
 
@@ -20,7 +22,13 @@ import br.edu.ifto.carvalho.bernard.mallify.mallify.Repository.ProdutoRepository
 @Data
 
 @Table(name = "tbl_produto")
-public class Produto implements Serializable, Validable, ExistencyCheckable<ProdutoRepository>{
+public class Produto implements Serializable, Validable, ExistenceInSelfRepository{
+    
+    
+    @JsonIgnore
+    @Transient
+    private ProdutoRepository produtoRepository;
+
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id", nullable = false)
@@ -48,10 +56,12 @@ public class Produto implements Serializable, Validable, ExistencyCheckable<Prod
 
 
     @Override
-    public Boolean existsIn(ProdutoRepository repository) {
-        if(this.id==null)
-            return false;
-        return !repository.findById(this.id).isEmpty();
+    public Boolean existsInRepository() {
+        // TODO Auto-generated method stub
+        return null;
     }
+
+
+ 
  
 }
