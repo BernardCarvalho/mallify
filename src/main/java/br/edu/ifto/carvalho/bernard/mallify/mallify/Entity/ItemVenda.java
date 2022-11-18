@@ -35,10 +35,12 @@ public class ItemVenda implements Serializable , Validable{
     @Override
     public Boolean isValid() {
         EntityValidatorHelper<ItemVenda> entityValidatorHelper = new EntityValidatorHelper<>(this);
+        if(!produto.isValid())
+            return false;
         return entityValidatorHelper.isValid();
     }
 
-
+    //TODO
     @Override
     public Map<String, List<String>> getErros() {
         EntityValidatorHelper<ItemVenda> entityValidatorHelper = new EntityValidatorHelper<>(this);

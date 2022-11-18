@@ -82,18 +82,30 @@ public class VendaController {
             return new ResponseEntity<>(itemVenda,HttpStatus.OK);
         }
 
+        //TODO
         @PutMapping("carrinho/itens")
         public ResponseEntity<?> updateItemVendaList(@RequestBody List<ItemVenda> itensList){
             
             for (ItemVenda itemVenda : itensList) {
                 if(!itemVenda.isValid())
-                    return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+                return new ResponseEntity<>(itemVenda,HttpStatus.NOT_ACCEPTABLE);
                 if(!itemVenda.getProduto().isValid())
-                    return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+                return new ResponseEntity<>(itensList,HttpStatus.NOT_ACCEPTABLE);
             }
             
             carrinho.setItensVenda(itensList);
 
+            //////////////////////////////////////////////////////////////////////////////////
+
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
+        
+        @PutMapping("carrinho/itens/{index}")
+        public ResponseEntity<?> putItemVenda(@PathVariable Integer index,@RequestBody ItemVenda itemVenda){
+            if(!itemVenda.isValid())
+                return new ResponseEntity<>(itemVenda,HttpStatus.NOT_ACCEPTABLE);
+            if(!itemVenda.getProduto().isValid())
+                return new ResponseEntity<>(itemVenda,HttpStatus.NOT_ACCEPTABLE);
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
 

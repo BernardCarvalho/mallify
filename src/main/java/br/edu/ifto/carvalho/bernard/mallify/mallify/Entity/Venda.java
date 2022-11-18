@@ -1,7 +1,6 @@
 package br.edu.ifto.carvalho.bernard.mallify.mallify.Entity;
 
 import java.io.Serializable;
-import java.lang.reflect.Array;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -85,6 +84,25 @@ public class Venda implements Serializable, Validable{
         if(itensVenda.size()<1)
             erros.putIfAbsent("itensVenda", Arrays.asList("e necessario possuir ter ao menos um item") );
         
+        this.getItensVenda().stream().forEach(itemVenda->{
+            if(!itemVenda.isValid())
+            {   
+                if(!erros.keySet().contains("itensVenda")) 
+                    erros.putIfAbsent("itensVenda", new ArrayList<String>());
+                List<String> errosDosItens = erros.get("itensVenda");
+
+                Map<String, List<String>> erroDoItem = itemVenda.getErros();
+
+                errosDosItens.add(
+                    new StringBuilder()
+                    .append("\"itemVenda_"+itemVenda.getId().toString()+"\"")
+                    .append(":")
+                    .append(itemVenda.getErros())
+                    .toString()
+                );
+            }
+        });
+
         return erros;
     }
 
