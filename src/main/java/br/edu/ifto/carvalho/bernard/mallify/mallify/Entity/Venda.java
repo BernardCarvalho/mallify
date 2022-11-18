@@ -18,6 +18,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.validation.constraints.NotNull;
 
 import org.springframework.context.annotation.Scope;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -51,6 +52,7 @@ public class Venda implements Serializable, Validable{
 
     @JsonBackReference
     @ManyToOne
+    @NotNull
     @JoinColumn(name="cod_cliente")
     private Cliente cliente;
 
@@ -84,10 +86,30 @@ public class Venda implements Serializable, Validable{
         if(itensVenda.size()<1)
             erros.putIfAbsent("itensVenda", Arrays.asList("e necessario possuir ter ao menos um item") );
         
-        //TODO ITENSVENDA ERRORS
-
+        //ITENSVENDA ERRORS
+        for(int i=0; i<itensVenda.size(); i++){
+            if(!itensVenda.get(i).isValid()){
+                Map<String, List<String>> errosItemVenda = itensVenda.get(i).getErros();
+                for (String fieldErrorName : errosItemVenda.keySet()) {
+                    erros.putIfAbsent("itensVenda_"+i+"."+fieldErrorName, new ArrayList<>());
+                    for (String erroString : errosItemVenda.get(fieldErrorName)) {
+                        erros.get("itensVenda_"+i+"."+fieldErrorName).add(erroString);
+                    }
+                }
+            }
+        }
 
         //TODO CLIENTE ERRORS
+
+        if(!cliente.isValid()){
+            Map<String, List<String>> errosCliente = cliente.getErros();
+            errosCliente.keySet().stream().parallel().forEach(chave->{
+                erros.putIfAbsent("cliente."+chave, new ArrayList<>());
+                errosCliente.get(chave).stream().parallel().forEach(valor->{
+                    erros.get("cliente."+chave).add(valor);
+                });
+            });
+        }
 
 
 

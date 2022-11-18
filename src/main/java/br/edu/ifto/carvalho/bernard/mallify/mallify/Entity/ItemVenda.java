@@ -6,6 +6,7 @@ import javax.validation.constraints.NotNull;
 
 import br.edu.ifto.carvalho.bernard.mallify.mallify.Classes.EntityValidatorHelper;
 import br.edu.ifto.carvalho.bernard.mallify.mallify.Interfaces.Validable;
+import br.edu.ifto.carvalho.bernard.mallify.mallify.Repository.ProdutoRepository;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -49,6 +50,17 @@ public class ItemVenda implements Serializable , Validable{
         Map<String, List<String>> erros = entityValidatorHelper.getErros();        
 
         //TODO PRODUTO ERRORS
+
+        
+        if(!produto.isValid()){
+            Map<String, List<String>> errosProduto = produto.getErros();
+            for (String fieldErrorName : errosProduto.keySet()) {
+                for(String fieldErrorValue : errosProduto.get(fieldErrorName)){
+                    erros.putIfAbsent("produto."+fieldErrorName, new ArrayList<String>());
+                    erros.get("produto."+fieldErrorName).add(fieldErrorValue);
+                }                
+            }
+        }
 
         return erros;
     }
