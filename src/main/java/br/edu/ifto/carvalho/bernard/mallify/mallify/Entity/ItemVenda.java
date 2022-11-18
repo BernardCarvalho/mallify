@@ -48,15 +48,7 @@ public class ItemVenda implements Serializable , Validable{
         
         Map<String, List<String>> erros = entityValidatorHelper.getErros();        
 
-        EntityValidatorHelper<Produto> entityValidatorHelper2 = new EntityValidatorHelper<>(produto);
-        Map<String, List<String>> errosDeProduto = entityValidatorHelper2.getErros();
-
-        errosDeProduto.keySet().stream().forEach(fieldName->{
-            for (var erro : errosDeProduto.get(fieldName)) {
-                erros.putIfAbsent("produto."+fieldName, new ArrayList<String>());
-                erros.get("produto."+fieldName).add(erro);
-            }
-        });
+        //TODO PRODUTO ERRORS
 
         return erros;
     }
