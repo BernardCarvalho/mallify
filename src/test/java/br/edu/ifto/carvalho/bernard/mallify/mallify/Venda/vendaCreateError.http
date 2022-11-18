@@ -1,0 +1,28 @@
+POST http://localhost:8080/vendas HTTP/1.1
+content-type: application/json
+
+{
+
+    "cliente":{
+        "email":"bernard@gmail.com",
+        "cpf":"a"
+    },
+    "itensVenda":[
+        {
+            "produto":{
+                "nome":"arroz",
+                "preco":22
+            },
+            "preco":22,
+            "quantidade":1
+        },
+        {
+            "produto":{
+                "nome":"arroz",
+                "preco":9.75
+            },
+            "preco":9.75,
+            "quantidade":2
+        }
+    ]
+}
