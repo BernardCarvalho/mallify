@@ -14,7 +14,11 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.WebApplicationContext;
 
 import br.edu.ifto.carvalho.bernard.mallify.mallify.Entity.ItemVenda;
+import br.edu.ifto.carvalho.bernard.mallify.mallify.Entity.Produto;
 import br.edu.ifto.carvalho.bernard.mallify.mallify.Entity.Venda;
+import br.edu.ifto.carvalho.bernard.mallify.mallify.Repository.ClienteRepository;
+import br.edu.ifto.carvalho.bernard.mallify.mallify.Repository.ItemVendaRepository;
+import br.edu.ifto.carvalho.bernard.mallify.mallify.Repository.ProdutoRepository;
 import br.edu.ifto.carvalho.bernard.mallify.mallify.Repository.VendaRepository;
 
 
@@ -28,6 +32,15 @@ public class VendaController {
 
     @Autowired
     VendaRepository repository;
+
+    @Autowired
+    ClienteRepository clienteRepository;
+
+    @Autowired
+    ItemVendaRepository itemVendaRepository;
+
+    @Autowired
+    ProdutoRepository produtoRepository;
 
     @Autowired
     Venda carrinho;
@@ -145,8 +158,13 @@ public class VendaController {
     public ResponseEntity<?> create(@RequestBody Venda venda) {
         try {
             if(!venda.isValid())
-                return new ResponseEntity<>(venda,HttpStatus.NOT_ACCEPTABLE);
-            repository.save(venda);
+                return new ResponseEntity<>(venda,HttpStatus.NOT_ACCEPTABLE);           
+            
+            //TODO CREATE PRODUTOS
+            
+            //TODO CREATE ITEMVENDAS
+            
+            //repository.save(venda);
             return new ResponseEntity<>(venda, HttpStatus.CREATED);
         } catch (Exception e) {
             return new ResponseEntity<>(venda,HttpStatus.INTERNAL_SERVER_ERROR);

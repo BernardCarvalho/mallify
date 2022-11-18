@@ -5,7 +5,9 @@ import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 
 import br.edu.ifto.carvalho.bernard.mallify.mallify.Classes.EntityValidatorHelper;
+import br.edu.ifto.carvalho.bernard.mallify.mallify.Interfaces.ExistencyCheckable;
 import br.edu.ifto.carvalho.bernard.mallify.mallify.Interfaces.Validable;
+import br.edu.ifto.carvalho.bernard.mallify.mallify.Repository.ItemVendaRepository;
 import br.edu.ifto.carvalho.bernard.mallify.mallify.Repository.ProdutoRepository;
 import lombok.Data;
 
@@ -17,18 +19,18 @@ import java.util.List;
 @Entity
 @Data
 @Table(name = "tbl_itemvenda")
-public class ItemVenda implements Serializable , Validable{
+public class ItemVenda implements Serializable , Validable, ExistencyCheckable<ItemVendaRepository>{
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id", nullable = false)
     private Integer id;
 
+    @NotNull
     @ManyToOne
     Produto produto;
 
-    @NotNull
     @Min(1)
-    private Double preco;
+    private double preco;
 
     @NotNull
     @Min(1)
@@ -36,10 +38,7 @@ public class ItemVenda implements Serializable , Validable{
     
     @Override
     public Boolean isValid() {
-        EntityValidatorHelper<ItemVenda> entityValidatorHelper = new EntityValidatorHelper<>(this);
-        if(!produto.isValid())
-            return false;
-        return entityValidatorHelper.isValid();
+        return this.getErros().isEmpty();
     }
 
     //TODO
@@ -51,7 +50,7 @@ public class ItemVenda implements Serializable , Validable{
 
         //TODO PRODUTO ERRORS
 
-        
+        if(!(produto==null))
         if(!produto.isValid()){
             Map<String, List<String>> errosProduto = produto.getErros();
             for (String fieldErrorName : errosProduto.keySet()) {
@@ -63,6 +62,13 @@ public class ItemVenda implements Serializable , Validable{
         }
 
         return erros;
+    }
+
+    @Override
+    public Boolean existsIn(ItemVendaRepository repository) {
+        if(this.id==null)
+            return false;
+        return !repository.findById(id).isEmpty();
     }
 
 }

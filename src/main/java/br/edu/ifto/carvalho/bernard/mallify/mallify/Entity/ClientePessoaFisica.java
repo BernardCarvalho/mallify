@@ -6,6 +6,7 @@ import javax.validation.constraints.NotNull;
 
 import br.edu.ifto.carvalho.bernard.mallify.mallify.Classes.EntityValidatorHelper;
 import br.edu.ifto.carvalho.bernard.mallify.mallify.Interfaces.Validable;
+import br.edu.ifto.carvalho.bernard.mallify.mallify.Repository.ClientePessoaFisicaRepository;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -15,7 +16,7 @@ import java.util.Map;
 @Entity
 @Data
 @Table(name = "tbL_cliente_pf")
-public class ClientePessoaFisica extends Cliente implements Serializable , Validable{
+public class ClientePessoaFisica extends Cliente implements Serializable, Validable{
     
     @NotNull
     @NotBlank
@@ -23,8 +24,7 @@ public class ClientePessoaFisica extends Cliente implements Serializable , Valid
 
     @Override
     public Boolean isValid() {
-        EntityValidatorHelper<ClientePessoaFisica> entityValidatorHelper = new EntityValidatorHelper<>(this);
-        return entityValidatorHelper.isValid();
+        return this.getErros().isEmpty();
     }
 
 
@@ -32,6 +32,14 @@ public class ClientePessoaFisica extends Cliente implements Serializable , Valid
     public Map<String, List<String>> getErros() {
         EntityValidatorHelper<ClientePessoaFisica> entityValidatorHelper = new EntityValidatorHelper<>(this);
         return entityValidatorHelper.getErros(); 
+    }
+
+
+    
+    public Boolean existsIn(ClientePessoaFisicaRepository repository) {
+        if(((Cliente)this).getId()==null)
+            return false;
+        return !repository.findById(this.getId()).isEmpty();
     }
     
 

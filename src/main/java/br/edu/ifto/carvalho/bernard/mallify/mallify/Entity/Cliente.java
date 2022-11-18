@@ -7,7 +7,9 @@ import javax.validation.constraints.NotBlank;
 import org.hibernate.annotations.GenericGenerator;
 
 import br.edu.ifto.carvalho.bernard.mallify.mallify.Classes.EntityValidatorHelper;
+import br.edu.ifto.carvalho.bernard.mallify.mallify.Interfaces.ExistencyCheckable;
 import br.edu.ifto.carvalho.bernard.mallify.mallify.Interfaces.Validable;
+import br.edu.ifto.carvalho.bernard.mallify.mallify.Repository.ClienteRepository;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -18,7 +20,7 @@ import java.util.Map;
 @Table(name = "tbl_cliente")
 @Data
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
-public class Cliente implements Serializable , Validable{
+public class Cliente implements Serializable , Validable, ExistencyCheckable<ClienteRepository>{
 
     @Id
     @GeneratedValue(generator = "inc")
@@ -34,8 +36,7 @@ public class Cliente implements Serializable , Validable{
 
     @Override
     public Boolean isValid() {
-        EntityValidatorHelper<Cliente> entityValidatorHelper = new EntityValidatorHelper<>(this);
-        return entityValidatorHelper.isValid();
+        return this.getErros().isEmpty();
     }
 
 
@@ -43,6 +44,14 @@ public class Cliente implements Serializable , Validable{
     public Map<String, List<String>> getErros() {
         EntityValidatorHelper<Cliente> entityValidatorHelper = new EntityValidatorHelper<>(this);
         return entityValidatorHelper.getErros();
+    }
+
+
+    @Override
+    public Boolean existsIn(ClienteRepository repository) {
+        if(this.getId()==null)
+            return false;
+        return !repository.findById(this.getId()).isEmpty();
     }
     
 }

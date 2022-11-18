@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -28,7 +29,9 @@ import org.springframework.web.context.WebApplicationContext;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 
 import br.edu.ifto.carvalho.bernard.mallify.mallify.Classes.EntityValidatorHelper;
+import br.edu.ifto.carvalho.bernard.mallify.mallify.Interfaces.ExistencyCheckable;
 import br.edu.ifto.carvalho.bernard.mallify.mallify.Interfaces.Validable;
+import br.edu.ifto.carvalho.bernard.mallify.mallify.Repository.VendaRepository;
 import lombok.Data;
 
 @Data// notação do lombok.Data que permite que não precisemos informar getters e setters
@@ -36,7 +39,7 @@ import lombok.Data;
 @Scope(value=WebApplicationContext.SCOPE_SESSION)
 @Component
 @Entity
-public class Venda implements Serializable, Validable{
+public class Venda implements Serializable, Validable, ExistencyCheckable<VendaRepository>{
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -48,6 +51,7 @@ public class Venda implements Serializable, Validable{
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)//notação que informa a multiplicidade do proximo atributo
     @JoinColumn(name="cod_venda") //nome da coluna
+    @NotNull
     private List<ItemVenda> itensVenda = new ArrayList<>();
 
     @JsonBackReference
@@ -57,25 +61,20 @@ public class Venda implements Serializable, Validable{
     private Cliente cliente;
 
     public Double getValorTotal(){
-        return 
-        itensVenda
-            .stream()
-            .mapToDouble(item->
-                item.getPreco())
-            .sum();
+        
+        Double valor = Double.valueOf("0");
+        for(int i=0; i<itensVenda.size();i++){
+            if(itensVenda.get(i)!=null)
+            {
+                valor+=itensVenda.get(i).getPreco();
+            }
+        }
+        return valor;
     }
 
     @Override
     public Boolean isValid() {
-        EntityValidatorHelper<Venda> entityValidatorHelper = new EntityValidatorHelper<>(this);
-        Boolean valid = entityValidatorHelper.isValid();
-        if(!valid)
-            return Boolean.FALSE;
-        
-        if(itensVenda.size()<1)
-            return Boolean.FALSE;
-
-        return Boolean.TRUE;
+        return this.getErros().isEmpty();
     }
 
     @Override
@@ -87,6 +86,7 @@ public class Venda implements Serializable, Validable{
             erros.putIfAbsent("itensVenda", Arrays.asList("e necessario possuir ter ao menos um item") );
         
         //ITENSVENDA ERRORS
+        if(!(itensVenda==null))
         for(int i=0; i<itensVenda.size(); i++){
             if(!itensVenda.get(i).isValid()){
                 Map<String, List<String>> errosItemVenda = itensVenda.get(i).getErros();
@@ -100,7 +100,7 @@ public class Venda implements Serializable, Validable{
         }
 
         //TODO CLIENTE ERRORS
-
+        if(!(cliente==null))
         if(!cliente.isValid()){
             Map<String, List<String>> errosCliente = cliente.getErros();
             errosCliente.keySet().stream().parallel().forEach(chave->{
@@ -115,6 +115,15 @@ public class Venda implements Serializable, Validable{
 
         return erros;
     }
+
+    @Override
+    public Boolean existsIn(VendaRepository repository) {
+        if(this.id==null)
+            return false;
+        return !repository.findById(id).isEmpty();
+    }
+
+    
 
    
 
