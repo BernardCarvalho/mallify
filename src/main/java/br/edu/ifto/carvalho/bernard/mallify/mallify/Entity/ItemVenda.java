@@ -10,6 +10,7 @@ import lombok.Data;
 
 import java.io.Serializable;
 import java.util.Map;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -44,7 +45,20 @@ public class ItemVenda implements Serializable , Validable{
     @Override
     public Map<String, List<String>> getErros() {
         EntityValidatorHelper<ItemVenda> entityValidatorHelper = new EntityValidatorHelper<>(this);
-        return entityValidatorHelper.getErros();        
+        
+        Map<String, List<String>> erros = entityValidatorHelper.getErros();        
+
+        EntityValidatorHelper<Produto> entityValidatorHelper2 = new EntityValidatorHelper<>(produto);
+        Map<String, List<String>> errosDeProduto = entityValidatorHelper2.getErros();
+
+        errosDeProduto.keySet().stream().forEach(fieldName->{
+            for (var erro : errosDeProduto.get(fieldName)) {
+                erros.putIfAbsent("produto."+fieldName, new ArrayList<String>());
+                erros.get("produto."+fieldName).add(erro);
+            }
+        });
+
+        return erros;
     }
 
 }
